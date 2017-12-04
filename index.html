@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<link rel="stylesheet" type="text/css" href="assets/css/app.css">
+	<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+
+	<style type="text/css">
+		.zui-table {
+		    border: solid 1px #DDEEEE;
+		    border-collapse: collapse;
+		    border-spacing: 0;
+		    font: normal 13px Arial, sans-serif;
+		    text-align: center;
+		}
+		.zui-table thead th {
+		    background-color: #DDEFEF;
+		    border: solid 1px #DDEEEE;
+		    color: #336B6B;
+		    padding: 10px;
+		    text-align: center;
+		    text-shadow: 1px 1px 1px #fff;
+		}
+		.zui-table tbody td {
+		    border: solid 1px #DDEEEE;
+		    color: #333;
+		    padding: 10px;
+		    text-shadow: 1px 1px 1px #fff;
+		}
+	</style>
+</head>
+<body>
+<div class="form" style="margin: 4em auto;">
+	<h2>Online Bus Ticket</h2>
+	<p>Now you can buy bus ticket anywhere at anytime !</p>
+	<p>Please Fill in the forms below</p>
+
+	<input id="one" type="radio" name="stage" checked="checked" />
+	<input id="two" type="radio" name="stage" />
+	<input id="three" type="radio" name="stage" />
+
+	<div class="stages">
+		<label for="one">1</label>
+		<label for="two">2</label>
+		<label for="three">3</label>
+	</div>
+
+	<span class="progress"><span></span></span>
+
+	<div class="panels">
+		<form action="receipt.php" method="post" id="form1">
+			<section data-panel="one">
+				<h4>Customer Details</h4>
+
+				<div class="form-group">
+			      <input type="text" name="name" id="name" required="required"/>
+			      <label class="control-label" for="input">Full Name</label><i class="bar"></i>
+			    </div>
+
+			    <div class="form-group">
+			      <input type="text" name="phone" id="phone" required="required"/>
+			      <label class="control-label" for="input">Contact Number</label><i class="bar"></i>
+			    </div>
+
+			    <div class="form-group">
+			      <textarea name="address" required="required"></textarea>
+			      <label class="control-label" for="textarea">Address</label><i class="bar"></i>
+			    </div>
+
+			</section>
+			<section data-panel="two">
+				<h4>Search for Available Bus</h4>
+				<div class="form-group">
+			      <select name="origin" class="place" id="origin">
+			      </select>
+	      		<label class="control-label" for="select">Where is your pick up location ?</label><i class="bar"></i>
+
+	      		<div class="form-group">
+			      <select name="destination" class="place" id="destination">
+			      </select>
+	      		<label class="control-label" for="select">Where do you want to go ?</label><i class="bar"></i>
+
+	      		<div class="form-group">
+			      <input type="date" id="date" name="date_board">
+	      		<label class="control-label" for="select">When do you want to go ?</label><i class="bar"></i>
+
+				<div class="form-group">
+			      <input type="number" name="quantity" required="required"/>
+			      <label class="control-label" for="input">How many tickets ?</label><i class="bar"></i>
+			    </div>
+
+			</section>
+			<section data-panel="three">
+				<h4>Available Bus</h4>
+				<div id="bus"></div>
+			</section>
+		</form>
+	</div>
+
+	<div id="submit">
+    	<button class="button"><span>Next</span></button>
+	</div>
+
+</div>
+	<script type="text/javascript">
+
+		$('.form .stages label').click(function() {
+			var radioButtons = $('.form input:radio');
+			var selectedIndex = radioButtons.index(radioButtons.filter(':checked'));
+			selectedIndex = selectedIndex + 1;
+		});
+
+		$('.form button').click(function() {
+			var radioButtons = $('.form input:radio');
+			var selectedIndex = radioButtons.index(radioButtons.filter(':checked'));
+
+			selectedIndex = selectedIndex + 2;
+
+			$('.form input[type="radio"]:nth-of-type(' + selectedIndex + ')').prop('checked', true);
+
+			if (selectedIndex == 3) {
+				$('#submit').html('<button class="button" type="submit" form="form1"><span>Submit</span></button>');
+			}
+		});
+	</script>
+	<script type="text/javascript">
+		$( document ).ready(function() {
+		  place = "";
+		  date = "";
+
+          $.ajax({
+              type:"GET",
+              url : "action.php?data=place",
+              async: false,
+              success : function(response) {
+                  place = response;
+                  return response;
+              },
+              error: function() {
+                  alert('Error occured');
+              }
+          });
+
+          //$('planDetails').append($(this).val());
+          $(".place").html(place);
+
+		});
+
+        $('#date').change(function() {
+
+          	$.ajax({
+	            type:"GET",
+	            url : "action.php?data=bus&origin=" + $('#origin').val() + "&destination=" + $('#destination').val() + "&date=" + $(this).val(),
+	            async: false,
+	            success : function(response) {
+	                data = response;
+	                return response;
+	            },
+	            error: function() {
+	                alert('Error occured');
+	            }
+	        });
+
+	        $("#bus").html(data);
+
+        });
+
+      </script>
+</body>
+</html>
